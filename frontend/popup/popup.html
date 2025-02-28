@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Eventos</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <h1>Gestión de Eventos</h1>
+
+    <form id="event-form">
+        <label for="event-name">Nombre del Evento:</label>
+        <input type="text" id="event-name" required>
+        
+        <label for="event-description">Descripción:</label>
+        <input type="text" id="event-description" required>
+
+        <label for="event-date">Fecha:</label>
+        <input type="datetime-local" id="event-date" required>
+
+        <button type="submit">Crear Evento</button>
+    </form>
+
+    <h2>Lista de Eventos</h2>
+    <ul id="events-list"></ul>
+
+    <script src="popup.js"></script>
+</body>
+</html>
