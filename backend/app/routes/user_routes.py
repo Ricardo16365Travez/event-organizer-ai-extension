@@ -1,20 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..database import get_db
-from ..models import User
-from ..schemas import UserCreate
-from ..utils.security import hash_password
+from app.database import get_db
+from app.models import User
+from app.schemas import UserCreate, UserResponse
+from app.utils.security import hash_password
 
 router = APIRouter()
 
-@router.post("/users")
+@router.post("/api/users", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    hashed_password = hash_password(user.password)
-    db_user = User(username=user.username, password=hashed_password)
+    db_user = User(name=user.name, email=user.email, hashed_password=hash_password(user.password))
     db.add(db_user)
     db.commit()
+    db.refresh(db_user)
     return db_user
-
-@router.get("/users")
-def get_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
