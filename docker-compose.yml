@@ -2,30 +2,30 @@ version: "3.8"
 
 services:
   postgres_db:
-    image: postgres:15
+    image: postgres:latest
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: admin
+      POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: event_organizer
+      POSTGRES_DB: eventdb
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  backend:
+  fastapi_backend:
     build: ./backend
     container_name: fastapi_backend
-    ports:
-      - "8000:8000"
+    restart: always
     depends_on:
       - postgres_db
     environment:
-      DATABASE_URL: postgresql://admin:password@postgres_db/event_organizer
-    volumes:
-      - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
+      DATABASE_URL: postgresql://user:password@postgres_db/eventdb
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+      
 volumes:
   postgres_data:

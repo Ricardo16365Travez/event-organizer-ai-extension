@@ -1,12 +1,16 @@
 from fastapi import FastAPI
-from app.routes import router  
-from app.routes.event_routes import router as event_router
+from app.database import Base, engine
+from app.routes import event_routes, speaker_routes, agenda_routes, space_routes, user_routes, report_routes
 
-app = FastAPI()
+app = FastAPI(title="Gestor de Eventos con IA")
 
-# Incluir todas las rutas en la aplicación principal
-app.include_router(router)
-app.include_router(event_router, prefix="/api")
-@app.get("/")
-def home():
-    return {"message": "API funcionando correctamente"}
+# Crear tablas automáticamente
+Base.metadata.create_all(bind=engine)
+
+# Incluir todas las rutas
+app.include_router(event_routes.router)
+app.include_router(speaker_routes.router)
+app.include_router(agenda_routes.router)
+app.include_router(space_routes.router)
+app.include_router(user_routes.router)
+app.include_router(report_routes.router)
