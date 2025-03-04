@@ -1,9 +1,9 @@
 {
-  "name": "Event Organizer AI",
-  "version": "1.0",
-  "description": "Extensión para gestionar eventos",
   "manifest_version": 3,
-  "permissions": ["storage"],
+  "name": "Gestor de Eventos AI",
+  "version": "1.0",
+  "description": "Extensión para gestionar eventos con IA",
+  "permissions": ["storage", "activeTab"],
   "host_permissions": ["http://localhost:8000/*"],
   "action": {
     "default_popup": "popup/popup.html",
@@ -12,8 +12,5 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
-  },
-  "background": {
-    "service_worker": "background.js"
   }
 }
