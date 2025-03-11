@@ -20,7 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("cancel-edit"))
         document.getElementById("cancel-edit").addEventListener("click", hideEditForm);
 
-    loadEventList();  // Cargar la lista de eventos al iniciar
+    if (document.getElementById("event-list"))
+        loadEventList();
 });
 
 async function createEvent() {
