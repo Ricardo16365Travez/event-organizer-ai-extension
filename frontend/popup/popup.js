@@ -1,10 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("create-event").addEventListener("click", createEvent);
-    document.getElementById("edit-event").addEventListener("click", editEvent);
-    document.getElementById("delete-event").addEventListener("click", deleteEvent);
-    document.getElementById("generate-report").addEventListener("click", openReportForm);
-    document.getElementById("recommend-speaker").addEventListener("click", recommendSpeaker);
-    document.getElementById("recommend-space").addEventListener("click", recommendSpace);
+    if (document.getElementById("create-event"))
+        document.getElementById("create-event").addEventListener("click", createEvent);
+    
+    if (document.getElementById("edit-event-toggle"))
+        document.getElementById("edit-event-toggle").addEventListener("click", toggleEditForm);
+    
+    if (document.getElementById("delete-event"))
+        document.getElementById("delete-event").addEventListener("click", deleteEvent);
+    
+    if (document.getElementById("recommend-speaker"))
+        document.getElementById("recommend-speaker").addEventListener("click", recommendSpeaker);
+    
+    if (document.getElementById("recommend-space"))
+        document.getElementById("recommend-space").addEventListener("click", recommendSpace);
+    
+    if (document.getElementById("save-event"))
+        document.getElementById("save-event").addEventListener("click", saveEditedEvent);
+    
+    if (document.getElementById("cancel-edit"))
+        document.getElementById("cancel-edit").addEventListener("click", hideEditForm);
+
+    loadEventList();  // Cargar la lista de eventos al iniciar
 });
 
 async function createEvent() {
@@ -29,6 +45,101 @@ async function createEvent() {
     } catch (error) {
         alert("Error al crear evento: " + error.message);
     }
+}
+
+function toggleEditForm() {
+    let editForm = document.getElementById("edit-form");
+    let mainForm = document.getElementById("main-form");
+
+    if (editForm.style.display === "none") {
+        editForm.style.display = "block";
+        mainForm.style.display = "none";
+        loadEventList();  // Recargar la lista de eventos
+    } else {
+        editForm.style.display = "none";
+        mainForm.style.display = "block";
+    }
+}
+
+// Cargar eventos en la lista desplegable
+async function loadEventList() {
+    try {
+        let response = await fetch("http://localhost:8000/api/events");
+        let events = await response.json();
+
+        let eventList = document.getElementById("event-list");
+        eventList.innerHTML = "";
+
+        events.forEach(event => {
+            let option = document.createElement("option");
+            option.value = event.id;
+            option.textContent = `${event.name} - ${event.date}`;
+            eventList.appendChild(option);
+        });
+
+        // Cargar detalles del primer evento automáticamente
+        if (events.length > 0) {
+            loadEventDetails(events[0].id);
+        }
+
+        eventList.addEventListener("change", () => loadEventDetails(eventList.value));
+    } catch (error) {
+        console.error("Error al cargar eventos:", error);
+    }
+}
+
+// Cargar detalles del evento seleccionado
+async function loadEventDetails(eventId) {
+    try {
+        let response = await fetch(`http://localhost:8000/api/events/${eventId}`);
+        let event = await response.json();
+
+        document.getElementById("edit-event-name").value = event.name;
+        document.getElementById("edit-event-type").value = event.event_type;
+        document.getElementById("edit-event-date").value = event.date.split(".")[0];  // Formato correcto para input datetime-local
+    } catch (error) {
+        console.error("Error al cargar detalles del evento:", error);
+    }
+}
+
+// Guardar cambios en un evento
+async function saveEditedEvent() {
+    let eventId = document.getElementById("event-list").value;
+    let name = document.getElementById("edit-event-name").value;
+    let eventType = document.getElementById("edit-event-type").value;
+    let date = document.getElementById("edit-event-date").value;
+
+    if (!eventId || !name || !eventType || !date) {
+        alert("Todos los campos son obligatorios.");
+        return;
+    }
+
+    try {
+        let response = await fetch(`http://localhost:8000/api/events/${eventId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, event_type: eventType, date })
+        });
+
+        let data = await response.json();
+        if (response.ok) {
+            alert("Evento actualizado correctamente.");
+            toggleEditForm();  // Volver al formulario principal
+            loadEventList();
+        } else {
+            console.error("Error al actualizar:", data);
+            alert("Error: " + data.detail);
+        }
+    } catch (error) {
+        console.error("Error en la petición:", error);
+        alert("Error en la conexión con el servidor.");
+    }
+}
+
+// Ocultar el formulario de edición y regresar al principal
+function hideEditForm() {
+    document.getElementById("edit-form").style.display = "none";
+    document.getElementById("main-form").style.display = "block";
 }
 
 async function deleteEvent() {

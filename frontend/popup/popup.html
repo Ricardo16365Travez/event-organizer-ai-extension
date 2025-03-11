@@ -7,34 +7,56 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <h2>Gestión de Eventos</h2>
-    
-    <label for="event-name">Nombre del Evento:</label>
-    <input type="text" id="event-name">
+    <!-- FORMULARIO PRINCIPAL -->
+    <div id="main-form">
+        <h2>Gestión de Eventos</h2>
 
-    <label for="event-type">Tipo de Evento:</label>
-    <select id="event-type">
-        <option value="BodasRecepciones">Bodas y Recepciones</option>
-        <option value="EventosCorporativos">Eventos Corporativos</option>
-        <option value="FiestasPrivadas">Fiestas Privadas</option>
-        <option value="EventosCulturales">Eventos Culturales</option>
-    </select>
+        <label for="event-name">Nombre del Evento:</label>
+        <input type="text" id="event-name">
 
-    <label for="event-date">Fecha y Hora:</label>
-    <input type="datetime-local" id="event-date">
+        <label for="event-type">Tipo de Evento:</label>
+        <select id="event-type">
+            <option value="BodasRecepciones">Bodas y Recepciones</option>
+            <option value="EventosCorporativos">Eventos Corporativos</option>
+            <option value="FiestasPrivadas">Fiestas Privadas</option>
+            <option value="EventosCulturales">Eventos Culturales</option>
+        </select>
 
-    <label for="num-attendees">Número de Asistentes:</label>
-    <input type="number" id="num-attendees">
-    
-    <label for="recommended-speaker">Speaker Recomendado:</label>
-    <input type="text" id="recommended-speaker" readonly>
+        <label for="event-date">Fecha y Hora:</label>
+        <input type="datetime-local" id="event-date">
 
-    <button id="create-event">Crear Evento</button>
-    <button id="edit-event">Editar Evento</button>
-    <button id="delete-event">Eliminar Evento</button>
-    <button id="recommend-speaker">Recomendar Speaker</button>
-    <button id="recommend-space">Recomendar Espacio</button>
-    <button id="generate-report">Generar Reporte</button>
+        <button id="create-event">Crear Evento</button>
+        <button id="edit-event-toggle">Editar Evento</button>
+        <button id="delete-event">Eliminar Evento</button>
+        <button id="recommend-speaker">Recomendar Speaker</button>
+        <button id="recommend-space">Recomendar Espacio</button>
+        <button id="generate-report">Generar Reporte</button>
+    </div>
+
+    <!-- FORMULARIO PARA EDITAR EVENTOS (INICIALMENTE OCULTO) -->
+    <div id="edit-form" style="display: none;">
+        <h2>Editar Evento</h2>
+
+        <label for="event-list">Selecciona un evento:</label>
+        <select id="event-list"></select>
+
+        <label for="edit-event-name">Nuevo Nombre:</label>
+        <input type="text" id="edit-event-name">
+
+        <label for="edit-event-type">Nuevo Tipo:</label>
+        <select id="edit-event-type">
+            <option value="BodasRecepciones">Bodas y Recepciones</option>
+            <option value="EventosCorporativos">Eventos Corporativos</option>
+            <option value="FiestasPrivadas">Fiestas Privadas</option>
+            <option value="EventosCulturales">Eventos Culturales</option>
+        </select>
+
+        <label for="edit-event-date">Nueva Fecha y Hora:</label>
+        <input type="datetime-local" id="edit-event-date">
+
+        <button id="save-event">Guardar Cambios</button>
+        <button id="cancel-edit">Cancelar</button>
+    </div>
 
     <script src="popup.js"></script>
 </body>
