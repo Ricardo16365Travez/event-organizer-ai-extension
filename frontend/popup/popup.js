@@ -5,7 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("generate-report").addEventListener("click", openReportForm);
     document.getElementById("recommend-speaker").addEventListener("click", recommendSpeaker);
     document.getElementById("recommend-space").addEventListener("click", recommendSpace);
+    document.getElementById("dark-mode-toggle").addEventListener("click", toggleDarkMode);
 });
+
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+}
 
 async function createEvent() {
     let name = document.getElementById("event-name").value;
@@ -29,17 +34,6 @@ async function createEvent() {
     } catch (error) {
         alert("Error al crear evento: " + error.message);
     }
-}
-
-async function deleteEvent() {
-    let eventId = prompt("Ingrese el ID del evento a eliminar:");
-    let response = await fetch(`http://localhost:8000/api/events/${eventId}`, { method: "DELETE" });
-    let data = await response.json();
-    alert(data.message);
-}
-
-async function generateReport() {
-    window.open("http://localhost:8000/api/reports");
 }
 
 async function recommendSpeaker() {
@@ -67,7 +61,6 @@ async function recommendSpeaker() {
     }
 }
 
-
 async function recommendSpace() {
     let numAttendees = document.getElementById("num-attendees").value;
 
@@ -86,20 +79,38 @@ async function recommendSpace() {
         alert("Error al obtener la recomendación de espacio: " + error.message);
     }
 }
+
+async function deleteEvent() {
+    let eventId = prompt("Ingrese el ID del evento a eliminar:");
+    if (!eventId) return;
+    try {
+        let response = await fetch(`http://localhost:8000/api/events/${eventId}`, { method: "DELETE" });
+        let data = await response.json();
+        alert(data.message);
+    } catch (error) {
+        alert("Error al eliminar el evento: " + error.message);
+    }
+}
+
 async function editEvent() {
     let eventId = prompt("Ingrese el ID del evento a editar:");
+    if (!eventId) return;
     let name = prompt("Nuevo nombre del evento:");
     let eventType = prompt("Nuevo tipo de evento:");
     let date = prompt("Nueva fecha y hora (YYYY-MM-DD HH:MM):");
 
-    let response = await fetch(`http://localhost:8000/api/events/${eventId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, event_type: eventType, date })
-    });
+    try {
+        let response = await fetch(`http://localhost:8000/api/events/${eventId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, event_type: eventType, date })
+        });
 
-    let data = await response.json();
-    alert(data.message);
+        let data = await response.json();
+        alert(data.message);
+    } catch (error) {
+        alert("Error al editar el evento: " + error.message);
+    }
 }
 
 async function openReportForm() {
@@ -144,44 +155,5 @@ async function openReportForm() {
         }
     } catch (error) {
         alert("Error al generar reporte: " + error.message);
-    }
-}
-
-async function generateReport() {
-    let eventId = document.getElementById("event-id").value;
-    let rating = document.getElementById("rating").value;
-    let organization = document.getElementById("organization").value;
-    let speaker_quality = document.getElementById("speaker-quality").value;
-    let venue_satisfaction = document.getElementById("venue-satisfaction").value;
-    let engagement = document.getElementById("engagement").value;
-    let logistics = document.getElementById("logistics").value;
-    let feedback = document.getElementById("feedback").value;
-
-    if (!eventId || !rating || !organization || !speaker_quality || !venue_satisfaction || !engagement || !logistics || !feedback) {
-        alert("Debe completar todas las preguntas.");
-        return;
-    }
-
-    let response = await fetch("http://localhost:8000/api/reports", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            event_id: eventId,
-            rating,
-            organization,
-            speaker_quality,
-            venue_satisfaction,
-            engagement,
-            logistics,
-            feedback
-        })
-    });
-
-    let data = await response.json();
-    if (data.id) {
-        alert("Reporte generado correctamente. Ahora puedes descargarlo.");
-        window.open(`http://localhost:8000/api/reports/download/${eventId}`, "_blank");
-    } else {
-        alert("Error al generar el reporte.");
     }
 }
