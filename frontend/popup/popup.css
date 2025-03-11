@@ -1,39 +1,144 @@
-body {
-    font-family: Arial, sans-serif;
-    width: 350px;
-    padding: 10px;
+/* Variables para el tema claro */
+:root {
+    --bg-color: #f7f7f7;
+    --container-bg: #ffffff;
+    --text-color: #333333;
+    --label-color: #555555;
+    --input-border: #cccccc;
+    --input-focus-border: #007BFF;
+    --input-focus-shadow: rgba(0, 123, 255, 0.3);
+    --button-bg: #007BFF;
+    --button-bg-hover: #0056b3;
+    --container-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+/* Variables para el tema oscuro */
+.dark-mode {
+    --bg-color: #1e1e1e;
+    --container-bg: #2c2c2c;
+    --text-color: #ffffff;
+    --label-color: #bbbbbb;
+    --input-border: #444444;
+    --input-focus-border: #4a90e2;
+    --input-focus-shadow: rgba(74, 144, 226, 0.3);
+    --button-bg: #4a90e2;
+    --button-bg-hover: #357ABD;
+    --container-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos globales */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Contenedor principal */
+.container {
+    background: var(--container-bg);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: var(--container-shadow);
+    width: 700px;
+    max-width: 90%;
+}
+
+/* Encabezado */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: var(--text-color);
+}
+
+/* Grupos del formulario */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--label-color);
+}
+
+/* Estilos para inputs y selects */
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background: var(--container-bg);
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 10px var(--input-focus-shadow);
+    outline: none;
+}
+
+/* Contenedor de botones */
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+/* Botones estilizados */
+button {
+    flex: 1 1 calc(33.33% - 15px);
+    padding: 15px;
+    background-color: var(--button-bg);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    min-width: 180px; /* Evita que los botones se encojan demasiado */
     text-align: center;
 }
 
-.form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+button:hover {
+    background-color: var(--button-bg-hover);
+    transform: translateY(-2px);
 }
 
-input, select, button {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-}
-
-button {
-    background-color: #007BFF;
+/* Botón de modo oscuro en la esquina superior derecha */
+#dark-mode-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #007BFF;
     color: white;
     border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-#output-container {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #f4f4f4;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
     border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#dark-mode-toggle:hover {
+    background: #0056b3;
+    transform: scale(1.1);
 }
