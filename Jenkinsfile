@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DB_CREDENTIALS = credentials('postgresql-credentials')
+        DB_CREDENTIALS = credentials('L00event1')
         DB_HOST = 'postgres_db'
         DB_NAME = 'eventdb'
         SQLALCHEMY_DATABASE_URL = "postgresql://${DB_CREDENTIALS_USR}:${DB_CREDENTIALS_PSW}@${DB_HOST}/${DB_NAME}"
