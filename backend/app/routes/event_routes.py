@@ -34,19 +34,22 @@ def delete_event(event_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Evento eliminado"}
 
-@router.put("/api/events/{event_id}")
-def edit_event(event_id: int, event_update: EventCreate, db: Session = Depends(get_db)):
+@router.get("/api/events/{event_id}", response_model=EventResponse)
+def get_event(event_id: int, db: Session = Depends(get_db)):
     event = db.query(Event).filter(Event.id == event_id).first()
-    
     if not event:
         raise HTTPException(status_code=404, detail="Evento no encontrado")
-    
-    if datetime.now() >= event.date:
-        raise HTTPException(status_code=400, detail="No se puede editar un evento que ya comenzó")
+    return event
 
-    event.name = event_update.name
-    event.event_type = event_update.event_type
-    event.date = event_update.date
+# Editar evento
+@router.put("/api/events/{event_id}")
+def update_event(event_id: int, event_data: EventCreate, db: Session = Depends(get_db)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
 
+    event.name = event_data.name
+    event.event_type = event_data.event_type
+    event.date = event_data.date
     db.commit()
     return {"message": "Evento actualizado con éxito"}

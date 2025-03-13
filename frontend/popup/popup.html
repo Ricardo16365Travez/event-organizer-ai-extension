@@ -14,46 +14,85 @@
   <div class="container">
     <h2>Gestión de Eventos</h2>
 
-    <div class="form-group">
-      <label for="event-name">Nombre del Evento:</label>
-      <input type="text" id="event-name">
+    <!-- FORMULARIO PRINCIPAL -->
+    <div id="main-form">
+      <div class="form-group">
+        <label for="event-name">Nombre del Evento:</label>
+        <input type="text" id="event-name">
+      </div>
+
+      <div class="form-group">
+        <label for="event-type">Tipo de Evento:</label>
+        <select id="event-type">
+          <option value="BodasRecepciones">Bodas y Recepciones</option>
+          <option value="EventosCorporativos">Eventos Corporativos</option>
+          <option value="FiestasPrivadas">Fiestas Privadas</option>
+          <option value="EventosCulturales">Eventos Culturales</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="num-attendees">Número de Asistentes:</label>
+        <input type="number" id="num-attendees" placeholder="Cantidad de asistentes">
+      </div>
+
+      <div class="form-group">
+        <label for="event-date">Fecha y Hora:</label>
+        <input type="datetime-local" id="event-date">
+      </div>
+
+      <div class="form-group">
+        <label for="recommended-speaker">Speaker Recomendado:</label>
+        <input type="text" id="recommended-speaker" readonly>
+      </div>
+
+      <div class="buttons">
+        <button id="create-event">Crear Evento</button>
+        <button id="edit-event-toggle">Editar Evento</button>
+        <button id="delete-event">Eliminar Evento</button>
+        <button id="recommend-speaker">Recomendar Speaker</button>
+        <button id="recommend-space">Recomendar Espacio</button>
+        <button id="generate-report">Generar Reporte</button>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="event-type">Tipo de Evento:</label>
-      <select id="event-type">
-        <option value="BodasRecepciones">Bodas y Recepciones</option>
-        <option value="EventosCorporativos">Eventos Corporativos</option>
-        <option value="FiestasPrivadas">Fiestas Privadas</option>
-        <option value="EventosCulturales">Eventos Culturales</option>
-      </select>
+    <!-- FORMULARIO PARA EDITAR EVENTOS (INICIALMENTE OCULTO) -->
+    <div id="edit-form" style="display: none;">
+      <h2>Editar Evento</h2>
+
+      <div class="form-group">
+        <label for="event-list">Selecciona un evento:</label>
+        <select id="event-list"></select>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-event-name">Nuevo Nombre:</label>
+        <input type="text" id="edit-event-name">
+      </div>
+
+      <div class="form-group">
+        <label for="edit-event-type">Nuevo Tipo:</label>
+        <select id="edit-event-type">
+          <option value="BodasRecepciones">Bodas y Recepciones</option>
+          <option value="EventosCorporativos">Eventos Corporativos</option>
+          <option value="FiestasPrivadas">Fiestas Privadas</option>
+          <option value="EventosCulturales">Eventos Culturales</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-event-date">Nueva Fecha y Hora:</label>
+        <input type="datetime-local" id="edit-event-date">
+      </div>
+
+      <div class="buttons">
+        <button id="save-event">Guardar Cambios</button>
+        <button id="cancel-edit">Cancelar</button>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="event-date">Fecha y Hora:</label>
-      <input type="datetime-local" id="event-date">
-    </div>
-
-    <div class="form-group">
-      <label for="num-attendees">Número de Asistentes:</label>
-      <input type="number" id="num-attendees">
-    </div>
-
-    <div class="form-group">
-      <label for="recommended-speaker">Speaker Recomendado:</label>
-      <input type="text" id="recommended-speaker" readonly>
-    </div>
-
-    <div class="buttons">
-      <button id="create-event">Crear Evento</button>
-      <button id="edit-event">Editar Evento</button>
-      <button id="delete-event">Eliminar Evento</button>
-      <button id="recommend-speaker">Recomendar Speaker</button>
-      <button id="recommend-space">Recomendar Espacio</button>
-      <button id="generate-report">Generar Reporte</button>
-    </div>
   </div>
-  
+
   <script src="popup.js"></script>
 </body>
 </html>

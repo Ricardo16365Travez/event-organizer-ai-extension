@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import spacy
 import json
 
-load_dotenv() 
+load_dotenv()
 
 router = APIRouter()
 
@@ -19,25 +19,36 @@ nlp = spacy.load("es_core_news_md")
 def analyze_feedback(feedback: str):
     doc = nlp(feedback)
 
-    
     entities = [(ent.text, ent.label_) for ent in doc.ents]
+    keywords = [token.text.lower() for token in doc if token.is_alpha and not token.is_stop]
+    word_count = len(doc)
 
-    # Extraer palabras clave
-    keywords = [token.text for token in doc if token.is_alpha and not token.is_stop]
+    # Listas de palabras para análisis de sentimiento
+    positive_words = {"excelente", "bueno", "satisfactorio", "genial", "agradable", "positivo", "satisfecho", "maravilloso", "increíble", "espectacular", "fantástico", "emocionante"}
+    negative_words = {"malo", "deficiente", "pésimo", "insatisfactorio", "negativo", "desagradable", "decepcionante", "aburrido", "frustrante", "mediocre"}
+
+    # Evaluar el sentimiento basado en la presencia de palabras clave
+    positive_count = sum(1 for word in keywords if word in positive_words)
+    negative_count = sum(1 for word in keywords if word in negative_words)
+
+    if word_count < 3:
+        summary = "El comentario es demasiado breve para un análisis profundo, pero refleja una impresión rápida."
+    elif positive_count > negative_count:
+        summary = "El evento fue altamente valorado por los asistentes, destacando aspectos positivos como la organización y experiencia general."
+    elif negative_count > positive_count:
+        summary = "El evento recibió críticas negativas, lo que sugiere oportunidades de mejora en varios aspectos."
+    else:
+        summary = "El evento tuvo opiniones diversas, con comentarios tanto positivos como áreas que podrían mejorarse."
 
     return {
         "entities": entities,
         "keywords": keywords,
-        "word_count": len(doc)
+        "word_count": word_count,
+        "summary": summary
     }
-
-# Prueba con un comentario de usuario
-feedback = "El evento en la Quinta Marcelo's fue excelente. Los speakers como Ana Pérez dieron charlas muy inspiradoras."
-print(analyze_feedback(feedback))
 
 @router.post("/api/reports")
 def generate_report(report: ReportCreate, db: Session = Depends(get_db)):
-    
     event = db.query(Event).filter(Event.id == report.event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Evento no encontrado")
@@ -46,7 +57,7 @@ def generate_report(report: ReportCreate, db: Session = Depends(get_db)):
     if any(field is None for field in required_fields):
         raise HTTPException(status_code=400, detail="Todos los campos deben tener valores")
 
-    ai_summary = json.dumps(analyze_feedback(report.feedback))
+    ai_summary = json.dumps(analyze_feedback(report.feedback), ensure_ascii=False)
 
     db_report = Report(
         event_id=report.event_id,
@@ -67,7 +78,6 @@ def generate_report(report: ReportCreate, db: Session = Depends(get_db)):
     return {"id": db_report.id, "message": "Reporte generado correctamente"}
 
 def create_pdf(report: Report):
-    
     pdf_dir = "reports"
     if not os.path.exists(pdf_dir):
         os.makedirs(pdf_dir)
@@ -99,20 +109,19 @@ def create_pdf(report: Report):
     pdf.set_font("Arial", "B", 14)
     pdf.cell(200, 10, "Análisis del Evento (IA):", ln=True)
     pdf.set_font("Arial", "", 12)
-    pdf.multi_cell(0, 10, report.ai_analysis)
-
+    ai_analysis = json.loads(report.ai_analysis)
+    pdf.multi_cell(0, 10, f"Opinión general: {ai_analysis.get('summary', 'No disponible')}\n")
+    
     pdf.output(pdf_path)
     return pdf_path
 
 @router.get("/api/reports/download/{event_id}")
 def download_report(event_id: int, db: Session = Depends(get_db)):
-    """ Descarga el reporte en formato PDF. """
     report = db.query(Report).filter(Report.event_id == event_id).first()
     if not report:
         raise HTTPException(status_code=404, detail="Reporte no encontrado")
 
     pdf_path = create_pdf(report)
-
     if not os.path.exists(pdf_path):
         raise HTTPException(status_code=500, detail="Error al generar el PDF")
 
