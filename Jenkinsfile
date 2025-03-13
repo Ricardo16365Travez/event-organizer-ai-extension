@@ -19,8 +19,8 @@ pipeline {
         stage('Construir y levantar servicios con Docker') {
             steps {
                 script {
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d --build'
+                    bat 'docker-compose down'
+                    bat 'docker-compose up -d --build'
                 }
             }
         }
@@ -29,12 +29,15 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'L00event1', usernameVariable: 'DB_CREDENTIALS_USR', passwordVariable: 'DB_CREDENTIALS_PSW')]) {
-                        sh '''
-                            echo "Esperando a que PostgreSQL esté disponible..."
-                            until docker exec postgres_db pg_isready -h postgres_db -U ${DB_CREDENTIALS_USR}; do
-                                echo "Esperando a PostgreSQL..."
-                                sleep 5
-                            done
+                        bat '''
+                            echo Esperando a que PostgreSQL esté disponible...
+                            :loop
+                            docker exec postgres_db pg_isready -h postgres_db -U %DB_CREDENTIALS_USR%
+                            if ERRORLEVEL 1 (
+                                echo PostgreSQL aún no está listo. Esperando...
+                                timeout /t 5 /nobreak
+                                goto loop
+                            )
                         '''
                     }
                 }
@@ -44,9 +47,9 @@ pipeline {
         stage('Configurar backend') {
             steps {
                 script {
-                    sh '''
-                        python -m venv ${VENV_PATH} && \
-                        . ${VENV_PATH}/bin/activate && \
+                    bat '''
+                        python -m venv %VENV_PATH%
+                        call %VENV_PATH%\\Scripts\\activate
                         pip install -r backend/requirements.txt
                     '''
                 }
@@ -57,8 +60,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'L00event1', usernameVariable: 'DB_CREDENTIALS_USR', passwordVariable: 'DB_CREDENTIALS_PSW')]) {
-                        sh '''
-                            . ${VENV_PATH}/bin/activate && \
+                        bat '''
+                            call %VENV_PATH%\\Scripts\\activate
                             alembic -c backend/alembic.ini upgrade head
                         '''
                     }
@@ -70,10 +73,10 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'L00event1', usernameVariable: 'DB_CREDENTIALS_USR', passwordVariable: 'DB_CREDENTIALS_PSW')]) {
-                        withEnv(["TEST_DATABASE_URL=postgresql://${DB_CREDENTIALS_USR}:${DB_CREDENTIALS_PSW}@${DB_HOST}/test_eventdb"]) {
-                            sh '''
-                                . ${VENV_PATH}/bin/activate && \
-                                pytest backend/tests/ --db-url=$TEST_DATABASE_URL
+                        withEnv(["TEST_DATABASE_URL=postgresql://%DB_CREDENTIALS_USR%:%DB_CREDENTIALS_PSW%@%DB_HOST%/test_eventdb"]) {
+                            bat '''
+                                call %VENV_PATH%\\Scripts\\activate
+                                pytest backend/tests/ --db-url=%TEST_DATABASE_URL%
                             '''
                         }
                     }
@@ -84,7 +87,7 @@ pipeline {
         stage('Verificar frontend') {
             steps {
                 script {
-                    sh '''
+                    bat '''
                         cd frontend
                         npm install
                         npm run build
@@ -96,7 +99,7 @@ pipeline {
         stage('Desplegar aplicación') {
             steps {
                 script {
-                    sh 'echo "Aplicación desplegada con éxito."'
+                    bat 'echo Aplicación desplegada con éxito.'
                 }
             }
         }
