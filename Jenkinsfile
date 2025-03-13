@@ -10,9 +10,11 @@ pipeline {
     }
 
     stages {
-        stage('Clonar repositorio') {
+         stage('Clonar repositorio') {
             steps {
-                git branch: 'main', url: 'https://github.com/tu-usuario/event-organizer-ai-extension.git'
+                git branch: 'main',
+                    credentialsId: 'L00event1',
+                    url: 'https://github.com/Ricardo16365Travez/event-organizer-ai-extension.git'
             }
         }
 
